@@ -1,0 +1,24 @@
+{
+  "main": {
+    "path": "tests/manual tests/Заявка_главная.xlsx",
+    "sheet": "",
+    "key_column": "Договор контрагента",
+    "output_column": "Outer"
+  },
+  "sources": [
+    {
+      "path": "tests/manual tests/Реестр выполненных заявок.xlsx",
+      "sheet": "ФЛ",
+      "key_column": "Лицевой счет",
+      "value_column": "ДАТА Установки ПУ",
+      "template": "дата установки: {value}"
+    },
+    {
+      "path": "tests/manual tests/Реестр невыполненных заявок.xlsx",
+      "sheet": "ФЛ",
+      "key_column": "ЛС",
+      "value_column": "Источник заявки",
+      "template": "Источник заявки: {value}"
+    }
+  ]
+}

@@ -17,6 +17,12 @@ BASE_DIR = Path(__file__).parent
 sys.path.insert(0, str(BASE_DIR))
 from table_lookup import TableLookup
 
+
+def _resource(relative: str) -> Path:
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS) / relative
+    return BASE_DIR / relative
+
 PLACEHOLDER_SHEET = "— лист —"
 PLACEHOLDER_COL   = "— столбец —"
 AUTO_OUT          = "— авто —"
@@ -423,6 +429,12 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
     def _build_ui(self):
         hdr = ctk.CTkFrame(self, fg_color="transparent")
         hdr.pack(fill="x", padx=20, pady=(12, 0))
+
+        logo_path = _resource("resources/logo.png")
+        if logo_path.exists():
+            from PIL import Image
+            self._logo_img = ctk.CTkImage(Image.open(logo_path), size=(36, 36))
+            ctk.CTkLabel(hdr, image=self._logo_img, text="").pack(side="left", padx=(0, 8))
 
         ctk.CTkLabel(hdr, text="SimpleExcelCopypaster", font=("Arial", 15, "bold")).pack(side="left")
 

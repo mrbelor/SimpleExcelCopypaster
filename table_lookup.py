@@ -84,6 +84,14 @@ class _Source:
 
     def load(self):
         self._df = _load_as_strings(self.path, self.sheet_name)
+        sheet_info = f" / лист '{self.sheet_name}'" if self.sheet_name else ""
+        cols = list(self._df.columns)
+        for col, role in ((self.key_col, "key_column"), (self.val_col, "value_column")):
+            if col not in cols:
+                raise ValueError(
+                    f"столбец '{col}' ({role}) не найден в {self.path.name}{sheet_info}. "
+                    f"Доступные столбцы: {cols}"
+                )
 
     def lookup(self, key):
         col_values = self._df[self.key_col].astype(str).str.strip()

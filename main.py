@@ -56,12 +56,14 @@ def load_config():
 def _require(obj, field, location):
     val = obj.get(field, "")
     if not val:
-        raise ValueError(f"config.json → {location}.{field}: обязательное поле пустое или отсутствует")
+        raise ValueError(f"{location}.{field}: обязательное поле пустое или отсутствует")
     return val
 
 
-def run():
-    cfg = load_config()
+def run(cfg: dict | None = None):
+    """Запустить алгоритм. cfg — словарь с ключами main/sources; если None — читает config.json."""
+    if cfg is None:
+        cfg = load_config()
     if cfg is None:
         return
 
@@ -71,7 +73,7 @@ def run():
 
     sources = cfg.get("sources", [])
     if not sources:
-        raise ValueError("config.json → sources: список пустой, нужен хотя бы один источник")
+        raise ValueError("sources: список пустой, нужен хотя бы один источник")
     for i, src in enumerate(sources):
         _require(src, "path",         f"sources[{i}]")
         _require(src, "key_column",   f"sources[{i}]")
@@ -97,9 +99,6 @@ def run():
 
 
 if __name__ == "__main__":
-    try:
-        run()
-    except Exception as e:
-        print(f"\nОШИБКА: {e}")
-    finally:
-        input("\nнажмите Enter для выхода...")
+    from gui import App
+    app = App()
+    app.mainloop()

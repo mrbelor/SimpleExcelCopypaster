@@ -1,3 +1,6 @@
 pandas>=2.0
 openpyxl>=3.1
 xlrd>=2.0
+customtkinter>=5.2
+tkinterdnd2
+Pillow>=10.0

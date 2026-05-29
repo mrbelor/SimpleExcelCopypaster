@@ -15,7 +15,10 @@ import pandas as pd
 
 BASE_DIR = Path(__file__).parent
 sys.path.insert(0, str(BASE_DIR))
-from table_lookup import TableLookup
+from table_lookup import TableLookup, TEMPLATE_KEY
+
+_TMPL_PLACEHOLDER = f"необязательно, напр.: Ваш текст: {{{TEMPLATE_KEY}}}"
+_TMPL_TOKEN       = f"{{{TEMPLATE_KEY}}}"
 
 
 def _resource(relative: str) -> Path:
@@ -153,12 +156,10 @@ class SourcePanel(ctk.CTkFrame):
         tr.pack(fill="x", padx=10, pady=(2, 8))
 
         ctk.CTkLabel(tr, text="Шаблон:", font=("Arial", 11)).pack(side="left", padx=(0, 4))
-        self._tmpl_var = ctk.StringVar()
-        ctk.CTkEntry(
-            tr, textvariable=self._tmpl_var,
-            placeholder_text='необязательно, напр.: дата установки: {value}',
-            height=28,
-        ).pack(side="left", fill="x", expand=True)
+        self._tmpl_entry = ctk.CTkEntry(
+            tr, placeholder_text=_TMPL_PLACEHOLDER, height=28,
+        )
+        self._tmpl_entry.pack(side="left", fill="x", expand=True)
 
     def set_number(self, n: int):
         self._n = n
@@ -212,7 +213,7 @@ class SourcePanel(ctk.CTkFrame):
             "sheet": "" if sheet in ("", PLACEHOLDER_SHEET) else sheet,
             "key_column": key,
             "value_column": val,
-            "template": self._tmpl_var.get(),
+            "template": self._tmpl_entry.get(),
         }
 
     def apply_config(self, cfg: dict):
@@ -229,7 +230,9 @@ class SourcePanel(ctk.CTkFrame):
             self._key_var.set(cfg["key_column"])
         if cfg.get("value_column") in cols:
             self._val_var.set(cfg["value_column"])
-        self._tmpl_var.set(cfg.get("template", ""))
+        tmpl = cfg.get("template", "")
+        if tmpl:
+            self._tmpl_entry.insert(0, tmpl)
 
 
 # ── MainPanel ─────────────────────────────────────────────────────────────────
@@ -568,6 +571,12 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
             c = panel.get_config()
             if c is None:
                 self._set_status(f"Источник {i}: файл или столбцы не выбраны", "red")
+                return None
+            if c.get("template") and _TMPL_TOKEN not in c["template"]:
+                self._set_status(
+                    f"Источник {i}: в шаблоне нет {_TMPL_TOKEN} — некуда подставить значение",
+                    "red",
+                )
                 return None
             srcs.append(c)
         return {"main": main, "sources": srcs}

@@ -3,6 +3,8 @@ import datetime
 import numbers
 import pandas as pd
 
+TEMPLATE_KEY = "value"
+
 
 def _xl_cell_to_str(v):
     # openpyxl возвращает Python-объекты (datetime, int, float, str, None) —
@@ -102,7 +104,7 @@ class _Source:
         if raw == "nan":
             raw = ""
         if self.template:
-            return self.template.format(value=raw)
+            return self.template.format(**{TEMPLATE_KEY: raw})
         return raw
 
 

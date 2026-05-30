@@ -403,6 +403,9 @@ class App(ctk.CTk, TkinterDnD.DnDWrapper):
         ctk.set_default_color_theme("blue")
 
         self.title("SimpleExcelCopypaster")
+        icon_path = _resource("resources/app_icon.ico")
+        if icon_path.exists():
+            self.iconbitmap(str(icon_path))
         self.geometry("640x720")
         self.minsize(580, 500)
 

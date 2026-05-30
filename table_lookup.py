@@ -104,7 +104,10 @@ class _Source:
         if raw == "nan":
             raw = ""
         if self.template:
-            return self.template.format(**{TEMPLATE_KEY: raw})
+            lines = [l for l in raw.splitlines() if l.strip()]
+            if not lines:
+                return self.template.format(**{TEMPLATE_KEY: raw})
+            return "\n".join(self.template.format(**{TEMPLATE_KEY: l}) for l in lines)
         return raw
 
 
